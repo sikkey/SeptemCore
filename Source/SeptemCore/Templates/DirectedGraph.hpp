@@ -2,47 +2,32 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
+#include "GraphType.hpp"
 #include <Containers/Array.h>
+#include <Containers/Map.h>
+
 
 namespace Septem
 {
 	namespace GraphTheory
 	{
-		template<typename VT>
-		struct Vertex
-		{
-			int32 Index;
-			VT Value;
-		};
-
-		/*
-		*	edge startId O -> O endId
-		*	template weight
-		*/
-		template<typename ET>
-		struct Edge
-		{
-			int32 StartId;
-			int32 EndId;
-			ET Weight;
-		};
-
 		template<typename VT, typename ET>
 		class DirectedGraph
 		{
 		public:
 			DirectedGraph();
 
-			void AddVertex(VT& InVT);
-			void AddVertex(VT&& InVT);
-			bool AddEdge(Edge<ET>& InEdge);
+			virtual void AddVertex(VT& InVT);
+			virtual void AddVertex(VT&& InVT);
+			virtual bool AddEdge(TEdge<ET>& InEdge);
 			bool IsValidVertexIndex(int32 InIndex);
+			bool IsValidEdge(int32 InStartId, int32 InEndId);
 			int32 VertexCount();
 			int32 EdgeCount();
 		private:
-			TArray<Vertex<VT>> VertexArray;
-			TSet<Edge<ET>> EdgeSet;
+			static uint64 HashEdgeKey(uint64 InStartId, uint64 InEndId);
+			TArray<TVertex<VT>> VertexArray;
+			TMap<uint64, TEdge<ET> > EdgeMap;
 			bool bDirectSelf;
 		};
 
@@ -55,11 +40,13 @@ namespace Septem
 		template<typename VT, typename ET>
 		inline void DirectedGraph<VT, ET>::AddVertex(VT & InVT)
 		{
-			Vertex<VT> vertex;
-
+			TVertex<VT> vertex
+				= { VertexArray.Num(),InVT };
+			/*
 			// push vertex back to the array
 			vertex.Index = VertexArray.Num();
 			vertex.Value = InVT;
+			*/
 
 			VertexArray.Add(vertex);
 		}
@@ -67,16 +54,19 @@ namespace Septem
 		template<typename VT, typename ET>
 		inline void DirectedGraph<VT, ET>::AddVertex(VT && InVT)
 		{
-			Vertex<VT> vertex;
+			TVertex<VT> vertex 
+				= {VertexArray.Num(),InVT};
 
+			/*
 			// push vertex back to the array
 			vertex.Index = VertexArray.Num();
 			vertex.Value = InVT;
+			*/
 
 			VertexArray.Add(vertex);
 		}
 		template<typename VT, typename ET>
-		inline bool DirectedGraph<VT, ET>::AddEdge(Edge<ET>& InEdge)
+		inline bool DirectedGraph<VT, ET>::AddEdge(TEdge<ET>& InEdge)
 		{
 			if (InEdge.StartId == InEdge.EndId)
 			{
@@ -86,9 +76,10 @@ namespace Septem
 
 			if (IsValidVertexIndex(InEdge.StartId) && IsValidVertexIndex(InEdge.EndId))
 			{
-				if (EdgeSet.Contains(InEdge))
+				uint64 key = HashEdgeKey(InEdge.StartId, InEdge.EndId);//((uint64)InEdge.StartId << 32) | (uint64)InEdge.EndId;
+				if (EdgeMap.Contains(key))
 					return false;
-				EdgeSet.Add(InEdge);
+				EdgeMap.Add(key, InEdge);
 				return true;
 			}
 
@@ -100,6 +91,13 @@ namespace Septem
 			return InIndex >= 0 && InIndex < VertexArray.Num();
 		}
 		template<typename VT, typename ET>
+		inline bool DirectedGraph<VT, ET>::IsValidEdge(int32 InStartId, int32 InEndId)
+		{
+			uint64 key = HashEdgeKey((uint64)InStartId, (uint64)InEndId);
+
+			return EdgeMap.Contains(key);
+		}
+		template<typename VT, typename ET>
 		inline int32 DirectedGraph<VT, ET>::VertexCount()
 		{
 			return VertexArray.Num();
@@ -107,7 +105,13 @@ namespace Septem
 		template<typename VT, typename ET>
 		inline int32 DirectedGraph<VT, ET>::EdgeCount()
 		{
-			return EdgeSet.Num();
+			return EdgeMap.Num();
+		}
+
+		template<typename VT, typename ET>
+		uint64 DirectedGraph<VT, ET>::HashEdgeKey(uint64 InStartId, uint64 InEndId)
+		{
+			return (InEdge.StartId << 32ui16) | InEdge.EndId;
 		}
 	}
 }
