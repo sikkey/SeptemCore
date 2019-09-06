@@ -1,23 +1,24 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "SeptemCore",
-	"Description": "Core of Septem Library",
-	"Category": "Septem",
-	"CreatedBy": "7Mersenne",
-	"CreatedByURL": "https://github.com/sikkey/SeptemCore",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "SeptemCore",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	]
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "SeptemCore",
+  "Description": "Core of Septem Library",
+  "Category": "Septem",
+  "CreatedBy": "7Mersenne",
+  "CreatedByURL": "https://github.com/sikkey/SeptemCore",
+  "DocsURL": "https://github.com/sikkey/SeptemCore/wiki",
+  "MarketplaceURL": "",
+  "SupportURL": "https://github.com/sikkey/SeptemCore/issues",
+  "EngineVersion": "4.22.0",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": true,
+  "Modules": [
+    {
+      "Name": "SeptemCore",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

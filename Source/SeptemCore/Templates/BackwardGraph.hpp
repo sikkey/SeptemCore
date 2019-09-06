@@ -9,10 +9,10 @@ namespace Septem
 	namespace GraphTheory
 	{
 		template<typename VT, typename ET>
-		class BackwardGraph : DirectedGraph<VT, ET>
+		class TBackwardGraph : TDirectedGraph<VT, ET>
 		{
 		public:
-			BackwardGraph();
+			TBackwardGraph();
 
 			virtual void AddVertex(VT& InVT) override;
 			virtual void AddVertex(VT&& InVT) override;
@@ -23,31 +23,31 @@ namespace Septem
 
 		
 		template<typename VT, typename ET>
-		BackwardGraph<VT, ET>::BackwardGraph()
-			:DirectedGraph<VT, ET>()
+		TBackwardGraph<VT, ET>::TBackwardGraph()
+			:TDirectedGraph<VT, ET>()
 		{
 		}
 
 		template<typename VT, typename ET>
-		inline void BackwardGraph<VT, ET>::AddVertex(VT & InVT)
+		inline void TBackwardGraph<VT, ET>::AddVertex(VT & InVT)
 		{
 			EdgeAdjustList eal(VertexArray.Num());
-			DirectedGraph<VT, ET>::AddVertex(InVT);
+			TDirectedGraph<VT, ET>::AddVertex(InVT);
 			ParentEdges.Add(eal);
 		}
 
 		template<typename VT, typename ET>
-		inline void BackwardGraph<VT, ET>::AddVertex(VT && InVT)
+		inline void TBackwardGraph<VT, ET>::AddVertex(VT && InVT)
 		{
 			EdgeAdjustList eal(VertexArray.Num());
-			DirectedGraph<VT, ET>::AddVertex(InVT);
+			TDirectedGraph<VT, ET>::AddVertex(InVT);
 			ParentEdges.Add(eal);
 		}
 
 		template<typename VT, typename ET>
-		inline bool BackwardGraph<VT, ET>::AddEdge(TEdge<ET>& InEdge)
+		inline bool TBackwardGraph<VT, ET>::AddEdge(TEdge<ET>& InEdge)
 		{
-			if (DirectedGraph<VT, ET>::AddEdge(InEdge))
+			if (TDirectedGraph<VT, ET>::AddEdge(InEdge))
 			{
 				ParentEdges[InEdge.EndId].AdjustVertexes.Add(InEdge.StartId);
 				return true;

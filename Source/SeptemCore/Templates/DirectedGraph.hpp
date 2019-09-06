@@ -12,10 +12,10 @@ namespace Septem
 	namespace GraphTheory
 	{
 		template<typename VT, typename ET>
-		class DirectedGraph
+		class TDirectedGraph
 		{
 		public:
-			DirectedGraph();
+			TDirectedGraph();
 
 			virtual void AddVertex(VT& InVT);
 			virtual void AddVertex(VT&& InVT);
@@ -32,13 +32,13 @@ namespace Septem
 		};
 
 		template<typename VT, typename ET>
-		DirectedGraph<VT, ET>::DirectedGraph()
+		TDirectedGraph<VT, ET>::TDirectedGraph()
 			:bDirectSelf(false)
 		{
 		}
 
 		template<typename VT, typename ET>
-		inline void DirectedGraph<VT, ET>::AddVertex(VT & InVT)
+		inline void TDirectedGraph<VT, ET>::AddVertex(VT & InVT)
 		{
 			TVertex<VT> vertex
 				= { VertexArray.Num(),InVT };
@@ -52,7 +52,7 @@ namespace Septem
 		}
 
 		template<typename VT, typename ET>
-		inline void DirectedGraph<VT, ET>::AddVertex(VT && InVT)
+		inline void TDirectedGraph<VT, ET>::AddVertex(VT && InVT)
 		{
 			TVertex<VT> vertex 
 				= {VertexArray.Num(),InVT};
@@ -66,7 +66,7 @@ namespace Septem
 			VertexArray.Add(vertex);
 		}
 		template<typename VT, typename ET>
-		inline bool DirectedGraph<VT, ET>::AddEdge(TEdge<ET>& InEdge)
+		inline bool TDirectedGraph<VT, ET>::AddEdge(TEdge<ET>& InEdge)
 		{
 			if (InEdge.StartId == InEdge.EndId)
 			{
@@ -86,30 +86,30 @@ namespace Septem
 			return false;
 		}
 		template<typename VT, typename ET>
-		inline bool DirectedGraph<VT, ET>::IsValidVertexIndex(int32 InIndex)
+		inline bool TDirectedGraph<VT, ET>::IsValidVertexIndex(int32 InIndex)
 		{
 			return InIndex >= 0 && InIndex < VertexArray.Num();
 		}
 		template<typename VT, typename ET>
-		inline bool DirectedGraph<VT, ET>::IsValidEdge(int32 InStartId, int32 InEndId)
+		inline bool TDirectedGraph<VT, ET>::IsValidEdge(int32 InStartId, int32 InEndId)
 		{
 			uint64 key = HashEdgeKey((uint64)InStartId, (uint64)InEndId);
 
 			return EdgeMap.Contains(key);
 		}
 		template<typename VT, typename ET>
-		inline int32 DirectedGraph<VT, ET>::VertexCount()
+		inline int32 TDirectedGraph<VT, ET>::VertexCount()
 		{
 			return VertexArray.Num();
 		}
 		template<typename VT, typename ET>
-		inline int32 DirectedGraph<VT, ET>::EdgeCount()
+		inline int32 TDirectedGraph<VT, ET>::EdgeCount()
 		{
 			return EdgeMap.Num();
 		}
 
 		template<typename VT, typename ET>
-		uint64 DirectedGraph<VT, ET>::HashEdgeKey(uint64 InStartId, uint64 InEndId)
+		uint64 TDirectedGraph<VT, ET>::HashEdgeKey(uint64 InStartId, uint64 InEndId)
 		{
 			return (InEdge.StartId << 32ui16) | InEdge.EndId;
 		}
