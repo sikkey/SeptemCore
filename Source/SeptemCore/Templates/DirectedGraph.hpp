@@ -16,6 +16,7 @@ namespace Septem
 		{
 		public:
 			TDirectedGraph();
+			virtual ~TDirectedGraph();
 
 			virtual void AddVertex(VT& InVT);
 			virtual void AddVertex(VT&& InVT);
@@ -24,7 +25,7 @@ namespace Septem
 			bool IsValidEdge(int32 InStartId, int32 InEndId);
 			int32 VertexCount();
 			int32 EdgeCount();
-		private:
+		protected:
 			static uint64 HashEdgeKey(uint64 InStartId, uint64 InEndId);
 			TArray<TVertex<VT>> VertexArray;
 			TMap<uint64, TEdge<ET> > EdgeMap;
@@ -34,6 +35,11 @@ namespace Septem
 		template<typename VT, typename ET>
 		TDirectedGraph<VT, ET>::TDirectedGraph()
 			:bDirectSelf(false)
+		{
+		}
+
+		template<typename VT, typename ET>
+		TDirectedGraph<VT, ET>::~TDirectedGraph()
 		{
 		}
 
@@ -111,7 +117,7 @@ namespace Septem
 		template<typename VT, typename ET>
 		uint64 TDirectedGraph<VT, ET>::HashEdgeKey(uint64 InStartId, uint64 InEndId)
 		{
-			return (InEdge.StartId << 32ui16) | InEdge.EndId;
+			return (InStartId << 32ui16) | InEndId;
 		}
 	}
 }

@@ -9,15 +9,16 @@ namespace Septem
 	namespace GraphTheory
 	{
 		template<typename VT, typename ET>
-		class TBackwardGraph : TDirectedGraph<VT, ET>
+		class TBackwardGraph : public TDirectedGraph<VT, ET>
 		{
 		public:
 			TBackwardGraph();
+			virtual ~TBackwardGraph();
 
 			virtual void AddVertex(VT& InVT) override;
 			virtual void AddVertex(VT&& InVT) override;
 			virtual bool AddEdge(TEdge<ET>& InEdge) override;
-		private:
+		protected:
 			TArray< EdgeAdjustList > ParentEdges;
 		};
 
@@ -25,6 +26,11 @@ namespace Septem
 		template<typename VT, typename ET>
 		TBackwardGraph<VT, ET>::TBackwardGraph()
 			:TDirectedGraph<VT, ET>()
+		{
+		}
+
+		template<typename VT, typename ET>
+		TBackwardGraph<VT, ET>::~TBackwardGraph()
 		{
 		}
 

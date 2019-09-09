@@ -3,3 +3,4 @@
 #pragma once
 
 #include <SeptemCore/Templates/DirectedGraph.hpp>
+#include <SeptemCore/Templates/BackwardGraph.hpp>
