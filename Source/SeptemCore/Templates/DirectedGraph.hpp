@@ -100,7 +100,7 @@ namespace Septem
 		{
 			if (InEdge.StartId == InEdge.EndId)
 			{
-				if (bDirectSelf)
+				if (!bDirectSelf)
 					return false;
 			}
 
