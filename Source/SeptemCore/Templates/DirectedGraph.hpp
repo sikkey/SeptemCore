@@ -35,6 +35,16 @@ namespace Septem
 			* need to check IsValidEdge before 
 			*/
 			TEdge<ET>& GetEdge(int32 InStartIndex, int32 InEndIndex);
+			/*
+			* unsafe call to get edge&
+			* need to check IsValidEdge before
+			*/
+			TEdge<ET>& GetEdge(uint64 InKey);
+			/*
+			* get keys array of edge map
+			* @ return	the count of the keys
+			*/
+			int32 GetEdgeKeys(TArray<uint64>& OutKeys);
 			bool IsValidVertexIndex(int32 InIndex);
 			bool IsValidEdge(int32 InStartId, int32 InEndId);
 			int32 VertexCount();
@@ -116,6 +126,19 @@ namespace Septem
 			uint64 key = HashEdgeKey(InStartIndex, InEndIndex);
 			return EdgeMap[key];
 		}
+
+		template<typename VT, typename ET>
+		inline TEdge<ET>& TDirectedGraph<VT, ET>::GetEdge(uint64 InKey)
+		{
+			return EdgeMap[InKey];
+		}
+		
+		template<typename VT, typename ET>
+		inline int32 TDirectedGraph<VT, ET>::GetEdgeKeys(TArray<uint64>& OutKeys)
+		{
+			return EdgeMap.GetKeys(OutKeys);
+		}
+
 		template<typename VT, typename ET>
 		inline bool TDirectedGraph<VT, ET>::IsValidVertexIndex(int32 InIndex)
 		{
