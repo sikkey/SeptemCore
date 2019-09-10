@@ -11,6 +11,10 @@ namespace Septem
 {
 	namespace GraphTheory
 	{
+		/*
+		*	Directed Graph
+		*	No Thread Safe
+		*/
 		template<typename VT, typename ET>
 		class TDirectedGraph
 		{
@@ -21,12 +25,22 @@ namespace Septem
 			virtual void AddVertex(VT& InVT);
 			virtual void AddVertex(VT&& InVT);
 			virtual bool AddEdge(TEdge<ET>& InEdge);
+			/*
+			* unsafe call to get vertex&
+			* need to check IsValidVertexIndex before
+			*/
+			TVertex<VT>& GetVertex(int32 InIndex);
+			/*
+			* unsafe call to get edge&
+			* need to check IsValidEdge before 
+			*/
+			TEdge<ET>& GetEdge(int32 InStartIndex, int32 InEndIndex);
 			bool IsValidVertexIndex(int32 InIndex);
 			bool IsValidEdge(int32 InStartId, int32 InEndId);
 			int32 VertexCount();
 			int32 EdgeCount();
-		protected:
 			static uint64 HashEdgeKey(uint64 InStartId, uint64 InEndId);
+		protected:
 			TArray<TVertex<VT>> VertexArray;
 			TMap<uint64, TEdge<ET> > EdgeMap;
 			bool bDirectSelf;
@@ -90,6 +104,17 @@ namespace Septem
 			}
 
 			return false;
+		}
+		template<typename VT, typename ET>
+		inline TVertex<VT> & TDirectedGraph<VT, ET>::GetVertex(int32 InIndex)
+		{
+			return VertexArray[InIndex];
+		}
+		template<typename VT, typename ET>
+		inline TEdge<ET>& TDirectedGraph<VT, ET>::GetEdge(int32 InStartIndex, int32 InEndIndex)
+		{
+			uint64 key = HashEdgeKey(InStartIndex, InEndIndex);
+			return EdgeMap[key];
 		}
 		template<typename VT, typename ET>
 		inline bool TDirectedGraph<VT, ET>::IsValidVertexIndex(int32 InIndex)
