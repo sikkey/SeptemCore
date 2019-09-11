@@ -18,6 +18,7 @@ namespace Septem
 			virtual void AddVertex(VT& InVT) override;
 			virtual void AddVertex(VT&& InVT) override;
 			virtual bool AddEdge(TEdge<ET>& InEdge) override;
+			virtual void Reset() override;
 		protected:
 			TArray< EdgeAdjustList > ParentEdges;
 		};
@@ -59,6 +60,13 @@ namespace Septem
 				return true;
 			}
 			return false;
+		}
+
+		template<typename VT, typename ET>
+		inline void TBackwardGraph<VT, ET>::Reset()
+		{
+			TDirectedGraph<VT, ET>::Reset();
+			ParentEdges.Reset();
 		}
 
 	}

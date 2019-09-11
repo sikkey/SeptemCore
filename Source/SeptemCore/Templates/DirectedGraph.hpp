@@ -25,6 +25,7 @@ namespace Septem
 			virtual void AddVertex(VT& InVT);
 			virtual void AddVertex(VT&& InVT);
 			virtual bool AddEdge(TEdge<ET>& InEdge);
+			virtual void Reset();
 			/*
 			* unsafe call to get vertex&
 			* need to check IsValidVertexIndex before
@@ -51,8 +52,8 @@ namespace Septem
 			int32 EdgeCount();
 			static uint64 HashEdgeKey(uint64 InStartId, uint64 InEndId);
 
-			void Seriallize(uint8* OutBuffer, uint64& OutSize);
-			void Deseriallize(uint8* InBuffer, uint64 InSize);
+			void Seriallize(uint8* OutBuffer, size_t& OutSize);
+			void Deseriallize(uint8* InBuffer, size_t InSize);
 		protected:
 			TArray<TVertex<VT>> VertexArray;
 			TMap<uint64, TEdge<ET> > EdgeMap;
@@ -119,6 +120,14 @@ namespace Septem
 
 			return false;
 		}
+
+		template<typename VT, typename ET>
+		inline void TDirectedGraph<VT, ET>::Reset()
+		{
+			VertexArray.Reset();
+			EdgeMap.Reset();
+		}
+
 		template<typename VT, typename ET>
 		inline TVertex<VT> & TDirectedGraph<VT, ET>::GetVertex(int32 InIndex)
 		{
@@ -172,14 +181,142 @@ namespace Septem
 			return (InStartId << 32ui16) | InEndId;
 		}
 
+		/*
+		*	{ Graph Memory }
+		*	+	VertexArray.Num()
+		*	+	[	VertexArray		]	x	VertexArray.Num()
+		*	+	EdgeMap.Num()
+		*	+	[	EdgeMapKeys	]	x	EdgeMap.Num()
+		*	+	[	EdgeMapValues	]	x	EdgeMap.Num()
+		*	+ sizeof(bDirectSelf)
+		*	Total Size = 
+		*		sizeof(VertexArray.Num()) + sizeof(TVertex<VT>) * VertexArray.Num()	+ sizeof(EdgeMap.Num()) + sizeof(uint64)*EdgeMap.Num() + sizeof(TEdge<ET>)*EdgeMap.Num() + sizeof(bDirectSelf)
+		*/
 		template<typename VT, typename ET>
-		inline void TDirectedGraph<VT, ET>::Seriallize(uint8 * OutBuffer, uint64 & OutSize)
+		inline void TDirectedGraph<VT, ET>::Seriallize(uint8 * OutBuffer, size_t & OutSize)
 		{
+			size_t _tvertexSize = sizeof(TVertex<VT>);
+			size_t _tedgeSize = sizeof(TEdge<ET>);
+			OutSize = sizeof(int32) + sizeof(TVertex<VT>) * VertexArray.Num() + sizeof(int32) + sizeof(uint64)*EdgeMap.Num() + sizeof(TEdge<ET>)*EdgeMap.Num() + sizeof(bool);
+			OutBuffer = malloc(OutSize);
+			size_t _index = 0;
+			size_t _Size = 0;
+
+			// *	{ Graph Memory }
+			// *	+	VertexArray.Num()
+			int32 VertexCount = VertexArray.Num();
+			_Size = sizeof(int32);
+			memcpy(OutBuffer + _index, &VertexCount, _Size);
+			_index += _Size;
+			// *	+	[	VertexArray		]	x	VertexArray.Num()
+			_Size = sizeof(TVertex<VT>);
+			for (int32 i = 0; i < VertexCount; ++i)
+			{
+				memcpy(OutBuffer + _index, &VertexArray[i], _Size);
+				_index += _Size;
+			}
+			// *	+	EdgeMap.Num()
+			TArray<uint64> _edgekeys;
+			int32 EdgeCount = EdgeMap.GetKeys(_edgekeys)
+			_Size = sizeof(int32);
+			memcpy(OutBuffer + _index, &EdgeCount, _Size);
+			_index += _Size;
+			// *	+	[	EdgeMapKeys	]	x	EdgeMap.Num()
+			_Size = sizeof(uint64);
+			for (int32 i = 0; i < EdgeCount; ++i)
+			{
+				memcpy(OutBuffer + _index, &_edgekeys[i], _Size);
+				_index += _Size;
+			}
+			// *	+	[	EdgeMapValues	]	x	EdgeMap.Num()
+			_Size = sizeof(TEdge<ET>);
+			for (int32 i = 0; i < EdgeCount; ++i)
+			{
+				memcpy(OutBuffer + _index, &EdgeMap[_edgekeys[i]], _Size);
+				_index += _Size;
+			}
+
+			// *	+ sizeof(bDirectSelf)
+			_Size = sizeof(bDirectSelf);
+			memcpy(OutBuffer + _index, &bDirectSelf, _Size);
+			_index += _Size;
 		}
 
+		/*
+		*	{ Graph Memory }
+		*	int32					+	VertexArray.Num()
+		*	TVertex<VT>	+	[	VertexArray		]	x	VertexArray.Num()
+		*	int32					+	EdgeMap.Num()
+		*	uint64				+	[	EdgeMapKeys	]	x	EdgeMap.Num()
+		*	TEdge<ET>	+	[	EdgeMapValues	]	x	EdgeMap.Num()
+		*	bool					+ sizeof(bDirectSelf)
+		*	Total Size =
+		*		sizeof(VertexArray.Num()) + sizeof(TVertex<VT>) * VertexArray.Num()	+ sizeof(EdgeMap.Num()) + sizeof(uint64)*EdgeMap.Num() + sizeof(TEdge<ET>)*EdgeMap.Num() + sizeof(bDirectSelf)
+		*/
 		template<typename VT, typename ET>
-		inline void TDirectedGraph<VT, ET>::Deseriallize(uint8 * InBuffer, uint64 InSize)
+		inline void TDirectedGraph<VT, ET>::Deseriallize(uint8 * InBuffer, size_t InSize)
 		{
+			size_t _tvertexSize = sizeof(TVertex<VT>);
+			size_t _tedgeSize = sizeof(TEdge<ET>);
+
+			size_t _index = 0;
+			size_t _Size = 0;
+
+			Reset();
+
+			// *	{ Graph Memory }
+			// *	+	VertexArray.Num()
+
+			int32 VertexCount = 0;// VertexArray.Num();
+			_Size = sizeof(int32);
+			memcpy(&VertexCount, InBuffer + _index, _Size);
+			_index += _Size;
+			VertexArray.Reset(VertexCount);
+
+			// *	+	[	VertexArray		]	x	VertexArray.Num()
+			_Size = sizeof(TVertex<VT>);
+			TVertex<VT> _tvertex;
+			for (int32 i = 0; i < VertexCount; ++i)
+			{
+				
+				memcpy(&_tvertex, InBuffer + _index, _Size);
+				_index += _Size;
+				AddVertex(_tvertex.Value);
+			}
+
+			// *	+	EdgeMap.Num()
+			TArray<uint64> _edgekeys;
+			int32 EdgeCount = 0;
+			_Size = sizeof(int32);
+			memcpy(&EdgeCount, InBuffer + _index, _Size);
+			_index += _Size;
+
+			// *	+	[	EdgeMapKeys	]	x	EdgeMap.Num()
+			_edgekeys.Reset(EdgeCount);
+			_Size = sizeof(uint64);
+			uint64 _key;
+			for (int32 i = 0; i < EdgeCount; ++i)
+			{
+				memcpy(&key, InBuffer + _index, _Size);
+				_index += _Size;
+				_edgekeys.Add(_key);
+			}
+
+			// *	+	[	EdgeMapValues	]	x	EdgeMap.Num()
+			EdgeMap.Reset();
+			_Size = sizeof(TEdge<ET>);
+			TEdge<ET> _value;
+			for (int32 i = 0; i < EdgeCount; ++i)
+			{
+				memcpy(&_value, InBuffer + _index, _Size);
+				_index += _Size;
+				AddEdge(_value);
+			}
+
+			// *	+ sizeof(bDirectSelf)
+			_Size = sizeof(bDirectSelf);
+			memcpy(&bDirectSelf, InBuffer + _index, _Size);
+			_index += _Size;
 		}
 
 	}
