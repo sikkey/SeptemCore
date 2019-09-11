@@ -50,9 +50,13 @@ namespace Septem
 			int32 VertexCount();
 			int32 EdgeCount();
 			static uint64 HashEdgeKey(uint64 InStartId, uint64 InEndId);
+
+			void Seriallize(uint8* OutBuffer, uint64& OutSize);
+			void Deseriallize(uint8* InBuffer, uint64 InSize);
 		protected:
 			TArray<TVertex<VT>> VertexArray;
 			TMap<uint64, TEdge<ET> > EdgeMap;
+			/// can direct to self , default = false
 			bool bDirectSelf;
 		};
 
@@ -167,5 +171,16 @@ namespace Septem
 		{
 			return (InStartId << 32ui16) | InEndId;
 		}
+
+		template<typename VT, typename ET>
+		inline void TDirectedGraph<VT, ET>::Seriallize(uint8 * OutBuffer, uint64 & OutSize)
+		{
+		}
+
+		template<typename VT, typename ET>
+		inline void TDirectedGraph<VT, ET>::Deseriallize(uint8 * InBuffer, uint64 InSize)
+		{
+		}
+
 	}
 }

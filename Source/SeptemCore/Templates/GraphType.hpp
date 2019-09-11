@@ -5,10 +5,14 @@
 #include <CoreMinimal.h>
 #include <Containers/Set.h>
 
+#pragma pack(push)
+#pragma pack(8)
+
 namespace Septem
 {
 	namespace GraphTheory
 	{
+
 		template<typename VT>
 		struct TVertex
 		{
@@ -43,3 +47,4 @@ namespace Septem
 		
 	}
 }
+#pragma pack(pop)
