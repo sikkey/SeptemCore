@@ -55,10 +55,10 @@ namespace Septem
 			void Seriallize(uint8* OutBuffer, size_t& OutSize);
 			void Deseriallize(uint8* InBuffer, size_t InSize);
 		protected:
-			TArray<TVertex<VT>> VertexArray;
-			TMap<uint64, TEdge<ET> > EdgeMap;
 			/// can direct to self , default = false
 			bool bDirectSelf;
+			TArray<TVertex<VT>> VertexArray;
+			TMap<uint64, TEdge<ET> > EdgeMap;
 		};
 
 		template<typename VT, typename ET>
@@ -183,12 +183,12 @@ namespace Septem
 
 		/*
 		*	{ Graph Memory }
+		*	+ sizeof(bDirectSelf)
 		*	+	VertexArray.Num()
 		*	+	[	VertexArray		]	x	VertexArray.Num()
 		*	+	EdgeMap.Num()
 		*	+	[	EdgeMapKeys	]	x	EdgeMap.Num()
 		*	+	[	EdgeMapValues	]	x	EdgeMap.Num()
-		*	+ sizeof(bDirectSelf)
 		*	Total Size = 
 		*		sizeof(VertexArray.Num()) + sizeof(TVertex<VT>) * VertexArray.Num()	+ sizeof(EdgeMap.Num()) + sizeof(uint64)*EdgeMap.Num() + sizeof(TEdge<ET>)*EdgeMap.Num() + sizeof(bDirectSelf)
 		*/
@@ -203,6 +203,12 @@ namespace Septem
 			size_t _Size = 0;
 
 			// *	{ Graph Memory }
+
+			// *	+ sizeof(bDirectSelf)
+			_Size = sizeof(bDirectSelf);
+			memcpy(OutBuffer + _index, &bDirectSelf, _Size);
+			_index += _Size;
+
 			// *	+	VertexArray.Num()
 			int32 VertexCount = VertexArray.Num();
 			_Size = sizeof(int32);
@@ -236,20 +242,16 @@ namespace Septem
 				_index += _Size;
 			}
 
-			// *	+ sizeof(bDirectSelf)
-			_Size = sizeof(bDirectSelf);
-			memcpy(OutBuffer + _index, &bDirectSelf, _Size);
-			_index += _Size;
 		}
 
 		/*
 		*	{ Graph Memory }
+		*	bool					+ sizeof(bDirectSelf)
 		*	int32					+	VertexArray.Num()
 		*	TVertex<VT>	+	[	VertexArray		]	x	VertexArray.Num()
 		*	int32					+	EdgeMap.Num()
 		*	uint64				+	[	EdgeMapKeys	]	x	EdgeMap.Num()
 		*	TEdge<ET>	+	[	EdgeMapValues	]	x	EdgeMap.Num()
-		*	bool					+ sizeof(bDirectSelf)
 		*	Total Size =
 		*		sizeof(VertexArray.Num()) + sizeof(TVertex<VT>) * VertexArray.Num()	+ sizeof(EdgeMap.Num()) + sizeof(uint64)*EdgeMap.Num() + sizeof(TEdge<ET>)*EdgeMap.Num() + sizeof(bDirectSelf)
 		*/
@@ -265,6 +267,12 @@ namespace Septem
 			Reset();
 
 			// *	{ Graph Memory }
+
+			// *	+ sizeof(bDirectSelf)
+			_Size = sizeof(bDirectSelf);
+			memcpy(&bDirectSelf, InBuffer + _index, _Size);
+			_index += _Size;
+
 			// *	+	VertexArray.Num()
 
 			int32 VertexCount = 0;// VertexArray.Num();
@@ -312,11 +320,6 @@ namespace Septem
 				_index += _Size;
 				AddEdge(_value);
 			}
-
-			// *	+ sizeof(bDirectSelf)
-			_Size = sizeof(bDirectSelf);
-			memcpy(&bDirectSelf, InBuffer + _index, _Size);
-			_index += _Size;
 		}
 
 	}
