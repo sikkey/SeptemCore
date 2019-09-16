@@ -53,7 +53,7 @@ namespace Septem
 	{
 		if (nullptr == pSingleton) {
 			FScopeLock lockSingleton(&mCriticalSection);
-			pSingleton = new TSingleton<T>();
+			pSingleton = new T();
 		}
 
 		return pSingleton;
@@ -64,7 +64,7 @@ namespace Septem
 	{
 		if (nullptr == pSingleton) {
 			FScopeLock lockSingleton(&mCriticalSection);
-			pSingleton = new TSingleton<T>();
+			pSingleton = new T();
 		}
 
 		return *pSingleton;
