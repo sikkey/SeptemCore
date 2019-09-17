@@ -68,7 +68,7 @@ namespace Septem
 		check(NBuffer);
 
 		// get fail array
-		BufferFailArray(NBuffer, Fail, Nlength);
+		BufferFailArray(NBuffer, Fail, NLength);
 
 		// Nlength - j <= MLength - i
 		// makesure i<MLength && j < NLength
