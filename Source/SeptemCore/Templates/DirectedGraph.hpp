@@ -223,7 +223,7 @@ namespace Septem
 			}
 			// *	+	EdgeMap.Num()
 			TArray<uint64> _edgekeys;
-			int32 EdgeCount = EdgeMap.GetKeys(_edgekeys)
+			int32 EdgeCount = EdgeMap.GetKeys(_edgekeys);
 			_Size = sizeof(int32);
 			memcpy(OutBuffer + _index, &EdgeCount, _Size);
 			_index += _Size;
@@ -305,7 +305,7 @@ namespace Septem
 			uint64 _key;
 			for (int32 i = 0; i < EdgeCount; ++i)
 			{
-				memcpy(&key, InBuffer + _index, _Size);
+				memcpy(&_key, InBuffer + _index, _Size);
 				_index += _Size;
 				_edgekeys.Add(_key);
 			}
