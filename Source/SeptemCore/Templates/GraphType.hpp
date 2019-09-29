@@ -5,8 +5,7 @@
 #include <CoreMinimal.h>
 #include <Containers/Set.h>
 
-#pragma pack(push)
-#pragma pack(8)
+#pragma pack(push, 1)
 
 namespace Septem
 {
