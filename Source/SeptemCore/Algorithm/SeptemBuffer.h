@@ -95,20 +95,7 @@ namespace Septem
 
 	// find the first syncword index in buffer
 	// return -1 or BufferSize when failed
-	static int32 BufferBufferSyncword(uint8* Buffer, int32 BufferSize, int32 Syncword)
-	{
-		int32 index = 0;
-		int32 maxdex = BufferSize - 4;
-		while (index < maxdex)
-		{
-			int32* ptr = (int32*)(Buffer + index);
-			if (*ptr == Syncword)
-				return index;
-
-			++index;
-		}
-
-		return -1;
-	}
+	int32 SEPTEMCORE_API BufferBufferSyncword(uint8* Buffer, int32 BufferSize, int32 Syncword);
+	
 }
 
